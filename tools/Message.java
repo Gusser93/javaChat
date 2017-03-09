@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import tools.IrcParser.Command;
+import tools.IrcParser.Mode;
 
 import static tools.IrcParser.COLON;
 import static tools.IrcParser.SPACE;
@@ -67,12 +68,27 @@ public class Message {
 	}	
 	
 	public static Message sendPrivateMessage(String target, String text) {
-		Message msg = new Message(Command.PRIVMSG, text);
-		return msg;
+		return new Message(Command.PRIVMSG, text);
 	}
 	
 	public static Message sendBroadcastMessage(String text) {
 		return sendPrivateMessage(AT_ALL, text);
+	}
+	
+	public static Message sendNickname(String nickname) {
+		return new Message(Command.NICK, nickname);
+	}
+	
+	public static Message sendUser(String uname, String realname, Mode mode) {
+		return new Message(Command.USER, uname, mode.toString(), "*", realname);
+	}
+	
+	public static Message sendPassword(String password) {
+		return new Message(Command.PASS, password);
+	}
+	
+	public static Message sendWelcome(){
+		return null;
 	}
 	
 	@Override
