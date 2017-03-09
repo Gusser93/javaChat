@@ -118,7 +118,6 @@ public class Message {
 
 	public String getBody() {
 		if(Command.PRIVMSG.equals(this.command)) {
-			System.out.println(Arrays.toString(params.toArray()));
 			return this.params.get(1);
 		} else
 			throw new IllegalArgumentException("This message is not a private message with body");
