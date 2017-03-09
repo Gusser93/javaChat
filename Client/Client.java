@@ -35,8 +35,7 @@ public class Client{
     }
 
     public boolean disconnect(){
-        if (connected) {
-
+        if (connected) {^
             try {
                 this.stream_in.close();
                 this.stream_out.close();
