@@ -45,7 +45,7 @@ public class Message {
 			params.add(param);
 		}
 		if(!input.equals(CRLF))
-			throw new IllegalArgumentException("Input doesn't end with CR-LF. Input was\n" + original);
+			throw new IllegalArgumentException("Input doesn't end with CR-LF. Input was\n" + original + "\n is actual" + input);
 	}
 
 	public Message(Command command, String... parameters) {
