@@ -49,6 +49,7 @@ public class Message {
 	}
 
 	public Message(Command command, String... parameters) {
+		this.params = new ArrayList<String>();
 		this.command = command;
 		Collections.addAll(this.params, parameters);
 	}
