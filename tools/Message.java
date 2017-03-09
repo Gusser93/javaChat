@@ -41,7 +41,7 @@ public class Message {
 		}
 
 		if(input.startsWith(COLON)) {
-			String param = input.substring(0, input.length()-2);
+			String param = input.substring(1, input.length()-2);
 			params.add(param);
 		}
 		if(!input.equals(CRLF))
