@@ -78,23 +78,29 @@ public class Client{
             this.stream_in.useDelimiter(IrcParser.CRLF);
 
             // send Handshake
-            this.connected = true;
+            System.out.println("####### Handshake #######");
             // send password
             Message msg = Message.sendPassword(this.passwd);
             this.stream_out.write(msg.toString());
             this.stream_out.flush();
+            System.out.println("Send Password");
 
             // send nickname
             msg = Message.sendNickname(this.nickname);
             this.stream_out.write(msg.toString());
+            System.out.println(msg.toString());
             this.stream_out.flush();
+            System.out.println("Send Nickname");
 
             // send username
             msg = Message.sendUser(this.user, this.user, IrcParser.Mode.NONE);
             this.stream_out.write(msg.toString());
             this.stream_out.flush();
+            System.out.println("Send User");
 
-            System.out.print("Connection established");
+            // finished Handshake
+            this.connected = true;
+            System.out.println("####### Connection established #######");
 
         } catch (IOException e) {
         	e.printStackTrace();
@@ -110,11 +116,9 @@ public class Client{
     }
 
     public void send(final String message, final String target){
-        // wenn verbunden, dann vom Input in outputServer schreiben
         if (this.is_connected()){
-            // get Message
+            // Send message
             Message msg = Message.sendPrivateMessage(target, message);
-            // send
             this.stream_out.write(msg.toString());
         }
     }
@@ -125,7 +129,7 @@ public class Client{
 
         Thread in = new Thread(){
             public void run(){
-                while (client.is_connected()){
+                while (client.is_connected() && client.stream_in.hasNext()){
                     String raw_message = client.stream_in.next();
                     Message msg = new Message(raw_message);
                     writer.write(msg.toString());
