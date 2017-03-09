@@ -6,6 +6,7 @@ import java.util.List;
 
 import tools.IrcParser.Command;
 import tools.IrcParser.Mode;
+import tools.IrcParser.Response;
 
 import static tools.IrcParser.COLON;
 import static tools.IrcParser.SPACE;
@@ -13,10 +14,11 @@ import static tools.IrcParser.CRLF;
 
 public class Message {
 	
-	public static final String AT_ALL = "@all";
+	public static final String AT_ALL = "#*";
 	
 	private String prefix;
 	private Command command;
+	private Response response;
 	private List<String> params;
 
 	public Message(String input) {
@@ -49,6 +51,14 @@ public class Message {
 	public Message(Command command, String... parameters) {
 		this.command = command;
 		Collections.addAll(this.params, parameters);
+	}
+	
+	public Message(String server, List<String> parameters, Response res) {
+		StringBuilder toBePrefix = new StringBuilder();
+		toBePrefix.append(COLON).append(server);
+		this.prefix = toBePrefix.toString();
+		this.response = res;
+		this.params = parameters;
 	}
 	
 	public String getPrefix() {
@@ -87,8 +97,26 @@ public class Message {
 		return new Message(Command.PASS, password);
 	}
 	
-	public static Message sendWelcome(){
-		return null;
+	public static Message sendWelcome(String nickname, String user, String host, String server){
+		String prefix = new StringBuilder().append(nickname).append("!").append(user).append("@").append(host).toString();
+		String text = Response.RPL_WELCOME.text + " " + prefix;
+		List<String> parameters = new ArrayList<String>();
+		Collections.addAll(parameters, nickname, text);
+		return new Message(server, parameters, Response.RPL_WELCOME);
+	}
+	
+	public String getTarget() {
+		if(Command.PRIVMSG.equals(this.command)) {
+			return this.params.get(0);
+		} else
+			throw new IllegalArgumentException("This message is not a private message with target");
+	}
+	
+	public String getBody() {
+		if(Command.PRIVMSG.equals(this.command)) {
+			return this.params.get(1);
+		} else
+			throw new IllegalArgumentException("This message is not a private message with body");		
 	}
 	
 	@Override
@@ -97,7 +125,11 @@ public class Message {
 		if(prefix != null) {
 			message.append(COLON).append(prefix).append(SPACE);
 		}
-		message.append(command.toString()).append(SPACE);
+		if(command != null)
+			message.append(command.toString()).append(SPACE);
+		else {
+			message.append(response.numeric).append(SPACE);
+		}
 		if(params.size() > 0) {
 			for(int i = 0; i < params.size()-1; i++)
 				message.append(params.get(i)).append(SPACE);
