@@ -27,24 +27,18 @@ public class Server{
     }
 
     public void accept_connections(){
-        final  Server server = this;
-        Thread t = new Thread(){
-            public void run() {
-                while (server.is_running()){
-                    try {
-                        Socket socket = server.socket.accept();
-                        // Perform Handshake
-                        server.add_client(socket);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+        while (this.is_running()){
+            try {
+                Socket socket = this.socket.accept();
+                // Perform Handshake
+                this.establish_client_connection(socket);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        };
-        t.start();
+        }
     }
 
-    public void add_client(Socket socket) throws IOException{
+    public void establish_client_connection(Socket socket) throws IOException{
         // perform Handshake
         String username = "";
         String nickname = "";
