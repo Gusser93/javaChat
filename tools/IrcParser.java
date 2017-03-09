@@ -7,8 +7,8 @@ import java.util.List;
 
 public abstract class IrcParser {
 	public static final String SPACE = String.valueOf((char)0x20);
-	public static final String CRLF = new StringBuilder().append((char)0x2D).append((char)0x0A).toString();
-	public static final String COLON = String.valueOf((char)0x3B);
+	public static final String CRLF = new StringBuilder().append((char)0x0D).append((char)0x0A).toString();
+	public static final String COLON = String.valueOf((char)0x3a);
 	
 	public static enum Command {
 		PASS, NICK, USER, OPER, MODE, SERVICE, QUIT, SQUIT,

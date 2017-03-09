@@ -47,6 +47,7 @@ public class Server{
 
         // block until we received our Handshake
         Scanner stream_in = new Scanner(socket.getInputStream());
+        System.out.println(stream_in.nextLine());
         stream_in.useDelimiter(IrcParser.CRLF);
 
         // password
@@ -71,6 +72,7 @@ public class Server{
         Client client = new Client(username, passwd, nickname, socket);
         this.clients.put(username, client);
         this.receive(client);
+        stream_in.close();
     }
 
     public boolean is_running(){
