@@ -29,7 +29,6 @@ public class Server{
     public void accept_connections(){
         while (this.is_running()){
             try {
-            	  System.out.println("Versuche Verbinfung aufzubauen");
                 Socket socket = this.socket.accept();
                 // Perform Handshake
                 this.establish_client_connection(socket);
@@ -44,31 +43,32 @@ public class Server{
         String username = "";
         String nickname = "";
         String passwd = "";
+        
+        Client client = new Client(username, passwd, nickname, socket);
 
         // block until we received our Handshake
-        Scanner stream_in = new Scanner(socket.getInputStream());
-        stream_in.useDelimiter(IrcParser.CRLF);
+        //Scanner stream_in = new Scanner(socket.getInputStream());
+        //stream_in.useDelimiter(IrcParser.CRLF);
 
         // password
-        String raw_message = stream_in.next();
+        String raw_message = client.stream_in.next();
         System.out.println(raw_message);
         Message msg = new Message(raw_message);
-        passwd = msg.params.get(0);
+        client.passwd = msg.params.get(0);
 
         // nickname
-        raw_message = stream_in.next();
+        raw_message = client.stream_in.next();
         System.out.println(raw_message);
         msg = new Message(raw_message);
-        nickname = msg.params.get(0);
+        client.nickname = msg.params.get(0);
 
         // username
-        raw_message = stream_in.next();
+        raw_message = client.stream_in.next();
         System.out.println(raw_message);
         msg = new Message(raw_message);
-        username = msg.params.get(0);
+        client.user = msg.params.get(0);
 
         // create Client after Handshake
-        Client client = new Client(username, passwd, nickname, socket);
         this.clients.put(username, client);
         this.receive(client);
     }
@@ -89,11 +89,10 @@ public class Server{
         Thread t = new Thread() {
             public void run() {
                   while (server.is_running() ){//&& client.stream_in.hasNext()) {
-                	  System.out.println("Hi, ich warte");
                       String raw_message = client.stream_in.next();
                       Message msg = new Message(raw_message);
                       server.process_message(client, msg);
-                      System.out.println("David war es");
+                      System.out.println(msg.toString());
                   }
             }
         };
@@ -107,9 +106,9 @@ public class Server{
         if (target.equals(Message.AT_ALL)) {
             // Broadcast message
             for (Client cl : this.clients.values()) {
-                //if (!cl.equals(client)) {
+                if (!cl.equals(client)) {
                     this.send(cl, message.getBody());
-                //}
+                }
             }
         } else {
             // send message to specific client
@@ -124,7 +123,10 @@ public class Server{
                   if (server.is_running()){
                       String username = client.user;
                       Message msg = Message.sendPrivateMessage(username, message);
-                      client.stream_out.write(msg.toString());
+                      System.out.println(msg);
+                      System.out.println(msg.toString().endsWith(IrcParser.CRLF));
+                      client.stream_out.print(msg.toString());
+                      client.stream_out.flush();
                   }
             }
         };
