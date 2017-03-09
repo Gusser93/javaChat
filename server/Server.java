@@ -95,15 +95,15 @@ public class Server{
         t.start();
     }
 
-    public void process_message(Client client, Message message) {
+    public void process_message(Client source, Message message) {
         // get target of message
         String target = message.getTarget();
 
         if (target.equals(Message.AT_ALL)) {
             // Broadcast message
-            for (Client cl : this.clients.values()) {
-                if (!cl.equals(client)) {
-                    this.send(cl, message.getBody());
+            for (Client destination : this.clients.values()) {
+                if (!destination.equals(source)) {
+                    this.send(destination, message.getBody());
                 }
             }
         } else {
