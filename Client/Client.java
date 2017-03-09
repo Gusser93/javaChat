@@ -16,7 +16,8 @@ public class Client{
     public static void main(String[] args){
         Client client = new Client("Dieter", "Klopp", "192.168.133.1");
         if (client.connect()){
-
+            client.receive(System.out);
+            client.send("Test Nachricht");
         }else{
             System.out.println("Markus wars!!!");
         }
@@ -66,24 +67,17 @@ public class Client{
         return true;
     }
 
-    public boolean send(final String message){
-        final Client client = this;
-        Thread out = new Thread(){
-            public void run() {
-                // wenn verbunden, dann vom Input in outputServer schreiben
-                if (client.is_connected()){
-                    // get Message
-                    String  msg = message;
-                    // send
-                    client.stream_out.write(msg);
-                }
-            }
-        };
-        out.start();
-        return true;
+    public void send(final String message){
+        // wenn verbunden, dann vom Input in outputServer schreiben
+        if (this.is_connected()){
+            // get Message
+            String  msg = message;
+            // send
+            this.stream_out.write(msg);
+        }
     }
 
-    public boolean receive(final OutputStream out){
+    public void receive(final OutputStream out){
         final Client client = this;
 
         Thread in = new Thread(){
@@ -101,7 +95,6 @@ public class Client{
             }
         };
         in.start();
-        return true;
     }
 
 }
