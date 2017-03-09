@@ -17,11 +17,11 @@ public class Client{
     public Scanner stream_in = null;
     private int port;
     private boolean connected = false;
+    private PrintWriter output = null;
 
-    public static void main(String[] args){
-        Client client = new Client("Dieter", "SuperSecret", "Nick", "192.168.133.96");
+    public static void main(String[] args) throws Exception {
+        Client client = new Client("Dieter", "SuperSecret", "Nick", "192.168.133.96", System.out);
         if (client.connect()){
-            client.receive(System.out);
             client.bcast("Test Nachricht");
         }else{
             System.out.println("Markus wars!!!");
@@ -37,19 +37,21 @@ public class Client{
         this.stream_out = new PrintWriter(this.socket.getOutputStream(), true);
         this.stream_in = new Scanner(this.socket.getInputStream());
         this.stream_in.useDelimiter(IrcParser.CRLF);
+
         this.connected = true;
     }
 
-    public Client(String user, String passwd, String nickname, String serverIp){
-        this(user, passwd, nickname, serverIp, 6697);
+    public Client(String user, String passwd, String nickname, String serverIp, OutputStream output){
+        this(user, passwd, nickname, serverIp, 6697, output);
     }
 
-    public Client(String user, String passwd, String nickname, String serverIp, int port){
+    public Client(String user, String passwd, String nickname, String serverIp, int port, OutputStream output){
         this.serverIp = serverIp;
         this.user = user;
         this.nickname = nickname;
         this.passwd = passwd;
         this.port = port;
+        this.output = new PrintWriter(output);
     }
 
     public boolean disconnect(){
@@ -88,7 +90,6 @@ public class Client{
             // send nickname
             msg = Message.sendNickname(this.nickname);
             this.stream_out.write(msg.toString());
-            System.out.println(msg.toString());
             this.stream_out.flush();
             System.out.println("Send Nickname");
 
@@ -102,6 +103,7 @@ public class Client{
             this.connected = true;
             System.out.println("####### Connection established #######");
 
+            this.receive();
         } catch (IOException e) {
         	e.printStackTrace();
             System.out.println("Connection failed");
@@ -120,19 +122,20 @@ public class Client{
             // Send message
             Message msg = Message.sendPrivateMessage(target, message);
             this.stream_out.write(msg.toString());
+            this.stream_out.flush();
         }
     }
 
-    public void receive(final OutputStream out){
+    public void receive(){
         final Client client = this;
-        PrintWriter writer = new PrintWriter(out);
 
         Thread in = new Thread(){
             public void run(){
-                while (client.is_connected() && client.stream_in.hasNext()){
+                while (client.is_connected()){
                     String raw_message = client.stream_in.next();
                     Message msg = new Message(raw_message);
-                    writer.write(msg.toString());
+                    client.output.println(msg.toString());
+                    client.output.flush();
                 }
             }
         };
