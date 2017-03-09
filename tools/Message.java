@@ -1,6 +1,7 @@
 package tools;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import tools.IrcParser.Command;
@@ -10,6 +11,9 @@ import static tools.IrcParser.SPACE;
 import static tools.IrcParser.CRLF;
 
 public class Message {
+	
+	public static final String AT_ALL = "@all";
+	
 	private String prefix;
 	private Command command;
 	private List<String> params;
@@ -41,9 +45,9 @@ public class Message {
 			throw new IllegalArgumentException("Input doesn't end with CR-LF. Input was\n" + original);
 	}
 	
-	public Message(Command command, List<String> parameters) {
+	public Message(Command command, String... parameters) {
 		this.command = command;
-		this.params = parameters;
+		Collections.addAll(this.params, parameters);
 	}
 	
 	public String getPrefix() {
@@ -63,7 +67,12 @@ public class Message {
 	}	
 	
 	public static Message sendPrivateMessage(String target, String text) {
-		return null;
+		Message msg = new Message(Command.PRIVMSG, text);
+		return msg;
+	}
+	
+	public static Message sendBroadcastMessage(String text) {
+		return sendPrivateMessage(AT_ALL, text);
 	}
 	
 	@Override
