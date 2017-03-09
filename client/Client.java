@@ -23,7 +23,7 @@ public class Client{
         Client client = new Client("Dieter", "SuperSecret", "Nick", "192.168.133.96", System.out);
         if (client.connect()){
             client.bcast("Test Nachricht");
-            client.disconnect();
+            //client.disconnect();
         }else{
             System.out.println("Markus wars!!!");
         }
@@ -58,6 +58,7 @@ public class Client{
     public boolean disconnect(){
         if (connected) {
             try {
+                this.connected = false;
                 // close connection
                 this.stream_in.close();
                 this.stream_out.close();
@@ -65,7 +66,6 @@ public class Client{
             } catch (Exception e) {
                 return false;
             }
-            this.connected = false;
         }
         return true;
     }

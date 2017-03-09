@@ -40,11 +40,7 @@ public class Server{
 
     public void establish_client_connection(Socket socket) throws IOException{
         // perform Handshake
-        String username = "";
-        String nickname = "";
-        String passwd = "";
-        
-        Client client = new Client(username, passwd, nickname, socket);
+        Client client = new Client("", "", "",  socket);
 
         // block until we received our Handshake
         //Scanner stream_in = new Scanner(socket.getInputStream());
@@ -69,7 +65,7 @@ public class Server{
         client.user = msg.params.get(0);
 
         // create Client after Handshake
-        this.clients.put(username, client);
+        this.clients.put(client.user, client);
         this.receive(client);
     }
 
