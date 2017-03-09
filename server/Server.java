@@ -18,19 +18,19 @@ public class Server{
     HashMap<String, Client> clients = new HashMap<String, Client>();
     private int port;
     private ServerSocket socket = null;
-    private boolean connected = false;
+    private boolean running = false;
 
     public Server(int port) throws IOException {
         this.port = port;
         this.socket = new ServerSocket(port);
-        this.connected = true;
+        this.running = true;
     }
 
     public void accept_connections(){
         final  Server server = this;
         Thread t = new Thread(){
             public void run() {
-                while (server.is_connected()){
+                while (server.is_running()){
                     try {
                         Socket socket = server.socket.accept();
                         // Perform Handshake
@@ -47,26 +47,50 @@ public class Server{
     public void add_client(Socket socket) throws IOException{
         // perform Handshake
         String username = "";
+        String nickname = "";
         String passwd = "";
 
-        Client client = new Client(username, passwd, socket);
+        // block until we received our Handshake
+        Scanner stream_in = new Scanner(socket.getInputStream());
+        stream_in.useDelimiter(IrcParser.CRLF);
+
+        // password
+        String raw_message = stream_in.next();
+        System.out.println(raw_message);
+        Message msg = new Message(raw_message);
+        passwd = msg.params.get(0);
+
+        // nickname
+        raw_message = stream_in.next();
+        System.out.println(raw_message);
+        msg = new Message(raw_message);
+        nickname = msg.params.get(0);
+
+        // username
+        raw_message = stream_in.next();
+        System.out.println(raw_message);
+        msg = new Message(raw_message);
+        username = msg.params.get(0);
+
+        // create Client after Handshake
+        Client client = new Client(username, passwd, nickname, socket);
         this.clients.put(username, client);
         this.receive(client);
     }
 
-    public boolean is_connected(){
-        return this.connected;
+    public boolean is_running(){
+        return this.running;
     }
 
     public void receive(final Client client){
         final Server server = this;
         Thread t = new Thread() {
             public void run() {
-                    while (server.is_connected()) {
-                        String raw_message = client.stream_in.next();
-                        Message msg = new Message(raw_message);
-                        server.process_message(msg);
-                    }
+                  while (server.is_running()) {
+                      String raw_message = client.stream_in.next();
+                      Message msg = new Message(raw_message);
+                      server.process_message(msg);
+                  }
             }
         };
         t.start();
@@ -87,7 +111,7 @@ public class Server{
         final Server server = this;
         Thread t = new Thread(){
             public void run() {
-                  if (server.is_connected()){
+                  if (server.is_running()){
                       String username = client.user;
                       Message msg = Message.sendPrivateMessage(username, message);
                       client.stream_out.write(msg.toString());
