@@ -35,18 +35,19 @@ public class Message {
 		input = input.substring(lastIndex+1);
 
 		while(!(input.startsWith(COLON) || input.equals(CRLF))) {
+			lastIndex = input.indexOf(SPACE);
 			String param = input.substring(0, lastIndex);
 			input = input.substring(lastIndex+1);
 			params.add(param);
 		}
 
 		if(input.startsWith(COLON)) {
-			String param = input.substring(1, input.length()-2);
-			input = input.substring(input.length()-2);
-			params.add(param);
+			String param = input.substring(1, input.length());
+			//input = input.substring(input.length()-2);
+			params.add(param.trim());
 		}
-		if(!input.equals(CRLF))
-			throw new IllegalArgumentException("Input doesn't end with CR-LF. Input was\n" + original + "\n is actual " + input);
+		/*if(!input.equals(CRLF))
+			throw new IllegalArgumentException("Input doesn't end with CR-LF. Input was\n" + original + "\n is actual " + input);*/
 	}
 
 	public Message(Command command, String... parameters) {
