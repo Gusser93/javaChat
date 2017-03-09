@@ -73,8 +73,15 @@ public class Server{
         this.receive(client);
     }
 
-    public boolean is_running(){
+    public boolean is_running() {
         return this.running;
+    }
+
+    public void stop() throws IOException {
+        for (Client client : this.clients.values()) {
+            client.disconnect();
+        }
+        this.socket.close();
     }
 
     public void receive(final Client client){
@@ -84,18 +91,20 @@ public class Server{
                   while (server.is_running()) {
                       String raw_message = client.stream_in.next();
                       Message msg = new Message(raw_message);
-                      server.process_message(msg);
+                      server.process_message(client, msg);
                   }
             }
         };
         t.start();
     }
 
-    public void process_message(Message message) {
+    public void process_message(Client client, Message message) {
         String target = message.getTarget();
         if (target.equals(Message.AT_ALL)) {
-            for (Client client : this.clients.values()) {
-                this.send(client, message.getBody());
+            for (Client cl : this.clients.values()) {
+                if (!cl.equals(client)) {
+                    this.send(cl, message.getBody());
+                }
             }
         } else {
             this.send(this.clients.get(target), message.getBody());

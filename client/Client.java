@@ -82,20 +82,26 @@ public class Client{
             // send password
             Message msg = Message.sendPassword(this.passwd);
             this.stream_out.write(msg.toString());
+            this.stream_out.flush();
+
             // send nickname
             msg = Message.sendNickname(this.nickname);
             this.stream_out.write(msg.toString());
+            this.stream_out.flush();
+
             // send username
             msg = Message.sendUser(this.user, this.user, IrcParser.Mode.NONE);
             this.stream_out.write(msg.toString());
+            this.stream_out.flush();
+
+            System.out.print("Connection established");
 
         } catch (IOException e) {
         	e.printStackTrace();
             System.out.println("Connection failed");
             return false;
         }
-        // Send/Receive Handshake
-        System.out.print("Connection established");
+
         return true;
     }
 
