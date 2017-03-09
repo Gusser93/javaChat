@@ -1,6 +1,7 @@
 package tools;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class Message {
 	}
 
 	public static Message sendPrivateMessage(String target, String text) {
-		return new Message(Command.PRIVMSG, text);
+		return new Message(Command.PRIVMSG, target, text);
 	}
 
 	public static Message sendBroadcastMessage(String text) {
@@ -117,6 +118,7 @@ public class Message {
 
 	public String getBody() {
 		if(Command.PRIVMSG.equals(this.command)) {
+			System.out.println(Arrays.toString(params.toArray()));
 			return this.params.get(1);
 		} else
 			throw new IllegalArgumentException("This message is not a private message with body");
