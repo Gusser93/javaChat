@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
+import tools.IrcParser.*;
 
 public class Server{
 
@@ -47,14 +48,13 @@ public class Server{
         final Server server = this;
         Thread t = new Thread() {
             public void run() {
-                Scanner stream_in = null;
                 try {
-                    stream_in = new Scanner(client.getInputStream());
+                    Scanner stream_in = new Scanner(client.getInputStream());
+                    stream_in.useDelimiter(IrcParser.CRLF);
                     while (server.is_connected()) {
                         String raw_message = stream_in.next();
-                        // wait til end of message
-                        String msg = raw_message;
-                        out.write(msg.getBytes());
+                        Message msg = Message(raw_message);
+                        out.write(msg.toString().getBytes());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -84,6 +84,11 @@ public class Server{
 
     public static void main(String[] args) throws Exception {
         Server server = new Server(6679);
+        server.accept_connections();
+        OutputStream output = new OutputStream();
+        while (true) {
+
+        }
     }
 
 }
