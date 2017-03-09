@@ -42,10 +42,11 @@ public class Message {
 
 		if(input.startsWith(COLON)) {
 			String param = input.substring(1, input.length()-2);
+			input = input.substring(input.length()-2);
 			params.add(param);
 		}
 		if(!input.equals(CRLF))
-			throw new IllegalArgumentException("Input doesn't end with CR-LF. Input was\n" + original);
+			throw new IllegalArgumentException("Input doesn't end with CR-LF. Input was\n" + original + "\n is actual " + input);
 	}
 
 	public Message(Command command, String... parameters) {
