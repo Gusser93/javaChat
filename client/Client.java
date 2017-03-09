@@ -1,3 +1,5 @@
+package client;
+
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
@@ -84,7 +86,7 @@ public class Client{
                 while (client.is_connected()){
                     String raw_message = client.stream_in.next();
                     String msg = raw_message;
-                    
+
                     try {
                         out.write(msg.getBytes());
                     } catch (IOException e) {

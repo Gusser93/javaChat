@@ -1,3 +1,5 @@
+package server;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
@@ -80,11 +82,8 @@ public class Server{
         t.start();
     }
 
-    public static void main(String[] args){
-        Server server = Server(6679);
-        //server.
+    public static void main(String[] args) throws Exception {
+        Server server = new Server(6679);
     }
-
-
 
 }
