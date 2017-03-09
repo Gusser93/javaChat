@@ -29,7 +29,7 @@ public class Server{
     public void accept_connections(){
         while (this.is_running()){
             try {
-            	System.out.println("Versuche Verbinfung aufzubauen");
+            	  System.out.println("Versuche Verbinfung aufzubauen");
                 Socket socket = this.socket.accept();
                 // Perform Handshake
                 this.establish_client_connection(socket);
@@ -101,14 +101,18 @@ public class Server{
     }
 
     public void process_message(Client client, Message message) {
+        // get target of message
         String target = message.getTarget();
+
         if (target.equals(Message.AT_ALL)) {
+            // Broadcast message
             for (Client cl : this.clients.values()) {
                 if (!cl.equals(client)) {
                     this.send(cl, message.getBody());
                 }
             }
         } else {
+            // send message to specific client
             this.send(this.clients.get(target), message.getBody());
         }
     }
@@ -128,6 +132,7 @@ public class Server{
     }
 
     public static void main(String[] args) throws Exception {
+        // start server
         Server server = new Server(6697);
         server.accept_connections();
     }

@@ -18,11 +18,12 @@ public class Client{
     private int port;
     private boolean connected = false;
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws Exception {
         Client client = new Client("Dieter", "SuperSecret", "Nick", "192.168.133.96");
         if (client.connect()){
             client.receive(System.out);
             client.bcast("Test Nachricht");
+            System.out.println("Inside");
         }else{
             System.out.println("Markus wars!!!");
         }
@@ -88,7 +89,6 @@ public class Client{
             // send nickname
             msg = Message.sendNickname(this.nickname);
             this.stream_out.write(msg.toString());
-            System.out.println(msg.toString());
             this.stream_out.flush();
             System.out.println("Send Nickname");
 
@@ -120,6 +120,7 @@ public class Client{
             // Send message
             Message msg = Message.sendPrivateMessage(target, message);
             this.stream_out.write(msg.toString());
+            this.stream_out.flush();
         }
     }
 
