@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class IrcParser {
-	private final String SPACE = String.valueOf((char)0x20);
-	private final String CRLF = new StringBuilder().append((char)0x2D).append((char)0x0A).toString();
-	private final String COLON = String.valueOf((char)0x3B);
+	public static final String SPACE = String.valueOf((char)0x20);
+	public static final String CRLF = new StringBuilder().append((char)0x2D).append((char)0x0A).toString();
+	public static final String COLON = String.valueOf((char)0x3B);
 	
-	public enum Command {
+	public static enum Command {
 		PASS, NICK, USER, OPER, MODE, SERVICE, QUIT, SQUIT,
 		JOIN, PART, TOPIC, NAMES, LIST, INVITE, KICK,
 		PRIVMSG, NOTICE,
@@ -20,7 +20,7 @@ public abstract class IrcParser {
 		AWAY, REHASH, DIE, RESTART, SUMMON, USERS, WALLOPS, USERHOST, ISON;
 	}
 	
-	public enum Response {
+	public static enum Response {
 		RPL_WELCOME("001", "Welcome to the Internet Relay Netowrk <nick>!<user>@<host>"),
 		RPL_YOURHOST("002", "Your host is <servername>, running version <ver>"),
 		RPL_CREATED("003", "Your server was created <date>"),
@@ -68,7 +68,8 @@ public abstract class IrcParser {
 		}
 		
 		public Message(Command command, List<String> parameters) {
-			
+			this.command = command;
+			this.params = parameters;
 		}
 		
 		public String getPrefix() {
@@ -85,8 +86,7 @@ public abstract class IrcParser {
 		
 		public List<String> getParams() {
 			return params;
-		}
-		
+		}		
 		
 		@Override
 		public String toString() {
@@ -103,5 +103,9 @@ public abstract class IrcParser {
 			message.append(CRLF);
 			return message.toString();
 		}
+	}
+	
+	public static Message sendPrivateMessage(String target, String text) {
+		return null;
 	}
 }
