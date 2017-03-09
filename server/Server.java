@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
-import tools.IrcParser.*;
+import tools.IrcParser;
+import tools.Message;
 
 public class Server{
 
@@ -45,6 +46,7 @@ public class Server{
     }
 
     public void receive(final Socket client, final OutputStream out){
+    	PrintWriter printer = new PrintWriter(out);
         final Server server = this;
         Thread t = new Thread() {
             public void run() {
@@ -53,8 +55,9 @@ public class Server{
                     stream_in.useDelimiter(IrcParser.CRLF);
                     while (server.is_connected()) {
                         String raw_message = stream_in.next();
-                        Message msg = Message(raw_message);
-                        out.write(msg.toString().getBytes());
+                        Message msg = new Message(raw_message);
+                        printer.print(msg.toString());
+                        //out.write(msg.toString().getBytes());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -71,8 +74,9 @@ public class Server{
                 try {
                     if (server.is_connected()){
                         PrintWriter stream_out = new PrintWriter(client.getOutputStream(), true);
-                        String msg = message;
-                        stream_out.write(msg);
+                        //String msg = message;
+                        Message msg = Message.sendPrivateMessage("<target>", message);
+                        stream_out.write(msg.toString());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
