@@ -19,7 +19,7 @@ public class Client{
     private boolean connected = false;
 
     public static void main(String[] args){
-        Client client = new Client("Dieter", "Klopp", "Nick", "192.168.133.1");
+        Client client = new Client("Dieter", "Klopp", "Nick", "127.0.0.1");
         if (client.connect()){
             client.receive(System.out);
             client.bcast("Test Nachricht");
@@ -90,7 +90,8 @@ public class Client{
             this.stream_out.write(msg.toString());
 
         } catch (IOException e) {
-            System.out.print("Connection failed");
+        	e.printStackTrace();
+            System.out.println("Connection failed");
             return false;
         }
         // Send/Receive Handshake
