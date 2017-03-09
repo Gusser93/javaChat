@@ -62,15 +62,11 @@ public class Server{
         final Server server = this;
         Thread t = new Thread() {
             public void run() {
-                try {
                     while (server.is_connected()) {
                         String raw_message = client.stream_in.next();
                         Message msg = new Message(raw_message);
                         server.process_message(msg);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         };
         t.start();
@@ -78,7 +74,7 @@ public class Server{
 
     public void process_message(Message message) {
         String target = message.getTarget();
-        if (target.isEqual(Message.AT_ALL)) {
+        if (target.equals(Message.AT_ALL)) {
             for (Client client : this.clients.values()) {
                 this.send(client, message.getBody());
             }
@@ -91,15 +87,11 @@ public class Server{
         final Server server = this;
         Thread t = new Thread(){
             public void run() {
-                try {
-                    if (server.is_connected()){
-                        String username = client.user;
-                        Message msg = Message.sendPrivateMessage(username, message);
-                        client.stream_out.write(msg.toString());
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                  if (server.is_connected()){
+                      String username = client.user;
+                      Message msg = Message.sendPrivateMessage(username, message);
+                      client.stream_out.write(msg.toString());
+                  }
             }
         };
         t.start();
