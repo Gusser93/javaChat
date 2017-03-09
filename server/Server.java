@@ -47,7 +47,6 @@ public class Server{
 
         // block until we received our Handshake
         Scanner stream_in = new Scanner(socket.getInputStream());
-        System.out.println(stream_in.nextLine());
         stream_in.useDelimiter(IrcParser.CRLF);
 
         // password
@@ -72,7 +71,6 @@ public class Server{
         Client client = new Client(username, passwd, nickname, socket);
         this.clients.put(username, client);
         this.receive(client);
-        stream_in.close();
     }
 
     public boolean is_running() {
@@ -90,10 +88,12 @@ public class Server{
         final Server server = this;
         Thread t = new Thread() {
             public void run() {
-                  while (server.is_running()) {
+                  while (server.is_running() ){//&& client.stream_in.hasNext()) {
+                	  System.out.println("Hi, ich warte");
                       String raw_message = client.stream_in.next();
                       Message msg = new Message(raw_message);
                       server.process_message(client, msg);
+                      System.out.println("David war es");
                   }
             }
         };
@@ -104,9 +104,9 @@ public class Server{
         String target = message.getTarget();
         if (target.equals(Message.AT_ALL)) {
             for (Client cl : this.clients.values()) {
-                if (!cl.equals(client)) {
+                //if (!cl.equals(client)) {
                     this.send(cl, message.getBody());
-                }
+                //}
             }
         } else {
             this.send(this.clients.get(target), message.getBody());
