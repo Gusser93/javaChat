@@ -20,10 +20,10 @@ public class Client{
     private PrintWriter output = null;
 
     public static void main(String[] args) throws Exception {
-        Client client = new Client("Markus der Große", "SuperSecret", "Nick", "192.168.133.96", System.out);
+        Client client = new Client("Dieter", "SuperSecret", "Nick", "192.168.133.96", System.out);
         if (client.connect()){
-        	for (int i = 0; i < 10; i++)
-        		client.bcast("David ist blöd");
+        	//for (int i = 0; i < 10; i++)
+        		client.bcast("Test Nachricht");
         }else{
             System.out.println("Markus wars!!!");
         }

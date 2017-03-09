@@ -95,33 +95,33 @@ public class Server{
         t.start();
     }
 
-    public void process_message(Client client, Message message) {
+    public void process_message(Client source, Message message) {
         // get target of message
         String target = message.getTarget();
 
         if (target.equals(Message.AT_ALL)) {
             // Broadcast message
-            for (Client cl : this.clients.values()) {
-            	System.out.println(cl.user);
-                //if (!cl.equals(client)) {
-                    this.send(cl, message.getBody());
-                //}
+            for (Client destination : this.clients.values()) {
+                if (!destination.equals(source)) {
+                    this.send(source, destination, message.getBody());
+                }
             }
         } else {
             // send message to specific client
-            this.send(this.clients.get(target), message.getBody());
+            this.send(source, this.clients.get(target), message.getBody());
         }
     }
 
-    public void send(final Client client, final String message) {
+    public void send(final Client src, final Client dst, final String message) {
         final Server server = this;
         Thread t = new Thread(){
             public void run() {
                   if (server.is_running()){
-                      String username = client.user;
-                      Message msg = Message.sendPrivateMessage(username, message);
-                      client.stream_out.print(msg.toString());
-                      client.stream_out.flush();
+                      String dstusr = dst.user;
+                      String srcusr = src.user;
+                      Message msg = Message.sendPrivateMessageFromServer(srcusr, dstusr, message);
+                      dst.stream_out.print(msg.toString());
+                      dst.stream_out.flush();
                   }
             }
         };
