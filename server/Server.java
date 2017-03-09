@@ -29,6 +29,7 @@ public class Server{
     public void accept_connections(){
         while (this.is_running()){
             try {
+            	System.out.println("Versuche Verbinfung aufzubauen");
                 Socket socket = this.socket.accept();
                 // Perform Handshake
                 this.establish_client_connection(socket);
@@ -116,7 +117,7 @@ public class Server{
     }
 
     public static void main(String[] args) throws Exception {
-        Server server = new Server(6679);
+        Server server = new Server(6697);
         server.accept_connections();
     }
 

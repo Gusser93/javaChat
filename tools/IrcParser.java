@@ -40,6 +40,6 @@ public abstract class IrcParser {
 	}
 	
 	public static enum Mode {
-		
+		NONE;
 	}
 }

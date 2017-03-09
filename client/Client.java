@@ -86,11 +86,12 @@ public class Client{
             msg = Message.sendNickname(this.nickname);
             this.stream_out.write(msg.toString());
             // send username
-            msg = Message.sendUser(this.user, this.user, Mode.NONE);
+            msg = Message.sendUser(this.user, this.user, IrcParser.Mode.NONE);
             this.stream_out.write(msg.toString());
 
         } catch (IOException e) {
-            System.out.print("Connection failed");
+        	e.printStackTrace();
+            System.out.println("Connection failed");
             return false;
         }
         // Send/Receive Handshake
