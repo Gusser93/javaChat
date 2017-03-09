@@ -106,9 +106,10 @@ public class Server{
         if (target.equals(Message.AT_ALL)) {
             // Broadcast message
             for (Client cl : this.clients.values()) {
-                if (!cl.equals(client)) {
+            	System.out.println(cl.user);
+                //if (!cl.equals(client)) {
                     this.send(cl, message.getBody());
-                }
+                //}
             }
         } else {
             // send message to specific client
@@ -123,8 +124,6 @@ public class Server{
                   if (server.is_running()){
                       String username = client.user;
                       Message msg = Message.sendPrivateMessage(username, message);
-                      System.out.println(msg);
-                      System.out.println(msg.toString().endsWith(IrcParser.CRLF));
                       client.stream_out.print(msg.toString());
                       client.stream_out.flush();
                   }
