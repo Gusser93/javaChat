@@ -1,5 +1,3 @@
-package client;
-
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
@@ -30,14 +28,14 @@ public class Client{
     }
 
     public Client(String user, String passwd, String ip_server, int port){
-        this.ip_server=ip_server;
+        this.ip_server = ip_server;
         this.user = user;
-        this.passwd=passwd;
-        this.port=port;
+        this.passwd = passwd;
+        this.port = port;
     }
 
     public boolean disconnect(){
-        if (connected) {^
+        if (connected) {
             try {
                 this.stream_in.close();
                 this.stream_out.close();
@@ -83,10 +81,10 @@ public class Client{
 
         Thread in = new Thread(){
             public void run(){
-                // solange verbunden vom InputServer in output schreiben
                 while (client.is_connected()){
                     String raw_message = client.stream_in.next();
                     String msg = raw_message;
+                    
                     try {
                         out.write(msg.getBytes());
                     } catch (IOException e) {
