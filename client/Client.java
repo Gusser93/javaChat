@@ -58,13 +58,14 @@ public class Client{
     public boolean disconnect(){
         if (connected) {
             try {
+                this.connected = false;
+                // close connection
                 this.stream_in.close();
                 this.stream_out.close();
                 this.socket.close();
             } catch (Exception e) {
                 return false;
             }
-            this.connected = false;
         }
         return true;
     }
@@ -133,6 +134,7 @@ public class Client{
         Thread in = new Thread(){
             public void run(){
                 while (client.is_connected()){
+                    // receive message and write to output
                     String raw_message = client.stream_in.next();
                     Message msg = new Message(raw_message);
                     client.output.println(msg.toString());
