@@ -19,7 +19,7 @@ public class Client{
     private boolean connected = false;
 
     public static void main(String[] args){
-        Client client = new Client("Dieter", "Klopp", "Nick", "192.168.133.1");
+        Client client = new Client("Dieter", "SuperSecret", "Nick", "192.168.133.96");
         if (client.connect()){
             client.receive(System.out);
             client.bcast("Test Nachricht");
@@ -83,10 +83,10 @@ public class Client{
             Message msg = Message.sendPassword(this.passwd);
             this.stream_out.write(msg.toString());
             // send nickname
-            msg = Message.sendPassword(this.nickname);
+            msg = Message.sendNickname(this.nickname);
             this.stream_out.write(msg.toString());
             // send username
-            msg = Message.sendPassword(this.user);
+            msg = Message.sendUser(this.user, this.user, Mode.NONE);
             this.stream_out.write(msg.toString());
 
         } catch (IOException e) {

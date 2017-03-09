@@ -116,7 +116,6 @@ public class Server{
     }
 
     public static void main(String[] args) throws Exception {
-
         Server server = new Server(6679);
         server.accept_connections();
     }
