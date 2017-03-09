@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 import tools.IrcParser.*;
+import tools.Message.*;
 
 public class Server{
 
