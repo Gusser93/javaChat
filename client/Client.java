@@ -23,6 +23,7 @@ public class Client{
         Client client = new Client("Dieter", "SuperSecret", "Nick", "192.168.133.96", System.out);
         if (client.connect()){
             client.bcast("Test Nachricht");
+            client.disconnect();
         }else{
             System.out.println("Markus wars!!!");
         }
@@ -57,6 +58,7 @@ public class Client{
     public boolean disconnect(){
         if (connected) {
             try {
+                // close connection
                 this.stream_in.close();
                 this.stream_out.close();
                 this.socket.close();
@@ -132,6 +134,7 @@ public class Client{
         Thread in = new Thread(){
             public void run(){
                 while (client.is_connected()){
+                    // receive message and write to output
                     String raw_message = client.stream_in.next();
                     Message msg = new Message(raw_message);
                     client.output.println(msg.toString());
