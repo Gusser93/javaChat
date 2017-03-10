@@ -26,7 +26,8 @@ public abstract class IrcParser {
 		RPL_YOURHOST("002", "Your host is <servername>, running version <ver>"),
 		RPL_CREATED("003", "Your server was created <date>"),
 		RPL_MYINFO("004", "<servername> <version> <available user modes> <availavle channel modes>"),
-		RPL_BOUNCE("005", "Try server <server name>, port <port>");
+		RPL_BOUNCE("005", "Try server <server name>, port <port>"),
+		ERR_ALREADYREGISTRED("462", "Unauthorized command (already registered)");
 		
 		String numeric;
 		String text;

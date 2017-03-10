@@ -120,6 +120,13 @@ public class Message {
 		return new Message(server, parameters, Response.RPL_WELCOME);
 	}
 
+	public static Message sendReject(String nickname, String server){
+		String text = Response.RPL_WELCOME.text;
+		List<String> parameters = new ArrayList<String>();
+		Collections.addAll(parameters, nickname, text);
+		return new Message(server, parameters, Response.RPL_WELCOME);
+	}
+
 	public String getTarget() {
 		if(Command.PRIVMSG.equals(this.command)) {
 			return this.params.get(0);

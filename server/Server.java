@@ -68,14 +68,28 @@ public class Server{
         System.out.println(raw_message);
         msg = new Message(raw_message);
         client.user = msg.params.get(0);
-
+        
+        if(this.checkUserExists(client.user))
+        	if(this.checkCorrectUser(client.user, client.passwd))
+        		welcomeUser(client);
+        	else
+        		rejectUser(client);
+        else {
+        	this.createUser(client.user, client.passwd);
+        	this.welcomeUser(client);
+        }
+    }
+    
+    private void welcomeUser(Client client) {
         // create Client after Handshake
         this.clients.put(client.user, client);
-        
         serverBcast(Message.sendBroadcastMessage(client.user + " entered chat."));
-        send(client, Message.sendWelcome(client.nickname, client.user, "", serverName));
-        
-        this.receive(client);
+        send(client, Message.sendWelcome(client.nickname, client.user, "", serverName)); 
+        this.receive(client);	
+    }
+    
+    private void rejectUser(Client client) {
+    	send(client.stream_out, Message.sendReject(client.nickname, serverName));
     }
 
     public boolean is_running() {
@@ -146,6 +160,19 @@ public class Server{
                   if (server.is_running()){
                       dst.stream_out.print(message.toString());
                       dst.stream_out.flush();
+                  }
+            }
+        };
+        t.start();
+    }
+
+    public void send(final PrintWriter dst, final Message message) {
+        final Server server = this;
+        Thread t = new Thread(){
+            public void run() {
+                  if (server.is_running()){
+                      dst.print(message.toString());
+                      dst.flush();
                   }
             }
         };

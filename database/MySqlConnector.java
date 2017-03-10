@@ -49,7 +49,7 @@ public class MySqlConnector {
 	public boolean checkUserExists(String username) {
 		try {
 			this.connectToMySql("localhost", DATABASE, DB_USER, DB_PW);
-			preparedStatement = connection.prepareStatement("SELECT username from ? where user = ?");
+			preparedStatement = connection.prepareStatement("SELECT username from ? where username = ?");
 			preparedStatement.setString(1, DATABASE+"."+USERTABLE);
 			preparedStatement.setString(2, username);
 			resultSet = preparedStatement.executeQuery();
@@ -90,7 +90,8 @@ public class MySqlConnector {
 				preparedStatement.setString(2, username);
 				preparedStatement.setString(3, username);
 				preparedStatement.setString(4, passwd);
-				preparedStatement.setString(5, "");
+				preparedStatement.setString(5, ""); //Salt
+				preparedStatement.setString(6, ""); //public key
 				preparedStatement.executeUpdate();
 				result = true;
 			} else

@@ -57,7 +57,7 @@ public class ChatApplication extends Application implements ChatAreaInterface {
 
         // create Client connection
         StreamCapturer out = new StreamCapturer(this);
-        this.client = new Client("David", "SuperSecret", "Nick", "192.168.133.96", out);
+        this.client = new Client("Markus", "SuperSecret", "Nick", "192.168.133.96", out);
 
         // main grid
         GridPane grid = new GridPane();
