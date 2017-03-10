@@ -76,23 +76,36 @@ public class ChatApplication extends Application implements ChatAreaInterface {
 
         TextField username = new TextField();
         username.setPromptText("Username");
+        TextField nickname = new TextField();
+        nickname.setPromptText("Nickname");
         PasswordField password = new PasswordField();
         password.setPromptText("Password");
 
         grid.add(new Label("Username:"), 0, 0);
         grid.add(username, 1, 0);
-        grid.add(new Label("Password:"), 0, 1);
-        grid.add(password, 1, 1);
+        grid.add(new Label("Nickname:"), 0, 1);
+        grid.add(nickname, 1, 1);
+        grid.add(new Label("Password:"), 0, 2);
+        grid.add(password, 1, 2);
 
         // Enable/Disable login button depending on whether a username was entered.
         Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
         loginButton.setDisable(true);
 
-        // Do some validation (using the Java 8 lambda syntax).
+        // loginbutton and password must not be empty
         username.textProperty().addListener((observable, oldValue, newValue) -> {
-            loginButton.setDisable(newValue.trim().isEmpty());
+            boolean usernameSet = !username.getText().trim().isEmpty();
+            boolean passwordSet = !password.getText().trim().isEmpty();
+            loginButton.setDisable(!(usernameSet && passwordSet));
         });
 
+        password.textProperty().addListener((observable, oldValue, newValue) -> {
+            boolean usernameSet = !username.getText().trim().isEmpty();
+            boolean passwordSet = !password.getText().trim().isEmpty();
+            loginButton.setDisable(!(usernameSet && passwordSet));
+        });
+
+        // set content
         dialog.getDialogPane().setContent(grid);
 
         // Request focus on the username field by default.
@@ -101,7 +114,7 @@ public class ChatApplication extends Application implements ChatAreaInterface {
         // get result
         Optional<Pair<String, String>> result = dialog.showAndWait();
         if (result.isPresent()) {
-            return new String[]{username.getText(), password.getText()};
+            return new String[]{username.getText(), nickname.getText(), password.getText()};
         }
 
         return null;
@@ -154,11 +167,10 @@ public class ChatApplication extends Application implements ChatAreaInterface {
 
         // login
         String[] loginData = this.showLoginDialog(primaryStage);
-        System.out.println(loginData[0] + "  " + loginData[1]);
 
         // create Client connection
         StreamCapturer out = new StreamCapturer(this);
-        this.client = new Client("David", "SuperSecret", "Nick", "192.168.133.96", out);
+        this.client = new Client(loginData[0], loginData[2], loginData[1], "192.168.133.96", out);
 
         // connect to server
         this.client.connect();
