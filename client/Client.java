@@ -16,6 +16,7 @@ public class Client{
     public PrintWriter stream_out = null;
     public Scanner stream_in = null;
     private int port;
+    private Thread receiveThread = null;
     private boolean connected = false;
     private PrintWriter output = null;
 
@@ -61,9 +62,10 @@ public class Client{
             try {
                 this.connected = false;
                 // close connection
-                this.stream_in.close();
-                this.stream_out.close();
+                this.receiveThread.interrupt();
                 this.socket.close();
+
+                this.output.close();
             } catch (Exception e) {
                 return false;
             }
@@ -136,18 +138,24 @@ public class Client{
     public void receive(){
         final Client client = this;
 
-        Thread in = new Thread(){
+        this.receiveThread = new Thread(){
             public void run(){
                 while (client.is_connected()){
                     // receive message and write to output
-                    String raw_message = client.stream_in.next();
-                    Message msg = new Message(raw_message);
-                    client.output.println(msg.toString());
-                    client.output.flush();
+                    if (client.stream_in.hasNext()) {
+                        String raw_message = client.stream_in.next();
+                        Message msg = new Message(raw_message);
+                        client.output.println(msg.toString());
+                        client.output.flush();
+                    } else {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {}
+                    }
                 }
             }
         };
-        in.start();
+        this.receiveThread.start();
     }
 
 }

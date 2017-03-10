@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.Insets;
+import javafx.application.Platform;
 
 
 import java.io.*;
@@ -123,8 +124,9 @@ public class ChatApplication extends Application implements ChatAreaInterface {
 
     @Override
     public void stop(){
-        System.out.println("Stage is closing");
-        this.client.disconnect();
+        System.out.println(this.client.disconnect());
+        Platform.exit();
+        System.exit(0);
     }
 
     public static void main(String[] args) {
