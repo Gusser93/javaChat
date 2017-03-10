@@ -12,6 +12,8 @@ import java.util.Scanner;
 import tools.IrcParser;
 import tools.Message;
 import client.Client;
+import database.MySqlConnector;
+
 import java.util.HashMap;
 
 public class Server{
@@ -19,11 +21,13 @@ public class Server{
     private int port;
     private ServerSocket socket = null;
     private boolean running = false;
+    private MySqlConnector database;
 
     public Server(int port) throws IOException {
         this.port = port;
         this.socket = new ServerSocket(port);
         this.running = true;
+        this.database = new MySqlConnector();
     }
 
     public void accept_connections(){
@@ -103,30 +107,41 @@ public class Server{
             // Broadcast message
             for (Client destination : this.clients.values()) {
                 if (!destination.equals(source)) {
-                    this.send(destination, message.getBody());
+                    this.send(source, destination, message.getBody());
                 }
             }
         } else {
             // send message to specific client
-            this.send(this.clients.get(target), message.getBody());
+            this.send(source, this.clients.get(target), message.getBody());
         }
     }
 
-    public void send(final Client client, final String message) {
+    public void send(final Client src, final Client dst, final String message) {
         final Server server = this;
         Thread t = new Thread(){
             public void run() {
                   if (server.is_running()){
-                      String username = client.user;
-                      Message msg = Message.sendPrivateMessage(username, message);
-                      System.out.println(msg);
-                      System.out.println(msg.toString().endsWith(IrcParser.CRLF));
-                      client.stream_out.print(msg.toString());
-                      client.stream_out.flush();
+                      String dstusr = dst.user;
+                      String srcusr = src.user;
+                      Message msg = Message.sendPrivateMessageFromServer(srcusr, dstusr, message);
+                      dst.stream_out.print(msg.toString());
+                      dst.stream_out.flush();
                   }
             }
         };
         t.start();
+    }
+    
+    public boolean checkUserExists(String username) {
+    	return database.checkUserExists(username);
+    }
+    
+    public boolean createUser(String username, String password) {
+    	return database.registerUser(username, password);
+    }
+    
+    public boolean checkCorrectUser(String username, String password) {
+    	return database.checkCorrectLogin(username, password);
     }
 
     public static void main(String[] args) throws Exception {

@@ -52,6 +52,11 @@ public class Message {
 	}
 
 	public Message(Command command, String... parameters) {
+		this(null, command, parameters);
+	}
+
+	public Message(String prefix, Command command, String... parameters) {
+		this.prefix = prefix;
 		this.params = new ArrayList<String>();
 		this.command = command;
 		Collections.addAll(this.params, parameters);
@@ -141,5 +146,10 @@ public class Message {
 		}
 		message.append(CRLF);
 		return message.toString();
+	}
+
+	public static Message sendPrivateMessageFromServer(String srcusr, String dstusr, String message) {
+		String prefix = srcusr;
+		return new Message(prefix, Command.PRIVMSG, dstusr, message);
 	}
 }
