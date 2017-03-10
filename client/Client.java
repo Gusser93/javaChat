@@ -22,7 +22,9 @@ public class Client{
     public static void main(String[] args) throws Exception {
         Client client = new Client("Dieter", "SuperSecret", "Nick", "192.168.133.96", System.out);
         if (client.connect()){
-            client.bcast("Test Nachricht");
+            client.bcast("Hallo an alle!");
+            client.send("Hallo Chris", "chris");
+            client.send("Hallo Markus", "Dieter2");
             //client.disconnect();
         }else{
             System.out.println("Markus wars!!!");
@@ -125,6 +127,10 @@ public class Client{
             Message msg = Message.sendPrivateMessage(target, message);
             this.stream_out.write(msg.toString());
             this.stream_out.flush();
+
+            // write own message to stream
+            this.output.write(msg.toString());
+            this.output.flush();
         }
     }
 
