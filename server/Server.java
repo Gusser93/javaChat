@@ -22,6 +22,7 @@ public class Server{
     private ServerSocket socket = null;
     private boolean running = false;
     private MySqlConnector database;
+    private String serverName = "Chat Server";
 
     public Server(int port) throws IOException {
         this.port = port;
@@ -70,6 +71,10 @@ public class Server{
 
         // create Client after Handshake
         this.clients.put(client.user, client);
+        
+        bcast(client, Message.sendBroadcastMessage(client.user + "entered chat."));
+        send(client, client, Message.sendWelcome(client.nickname, client.user, "", serverName).toString());
+        
         this.receive(client);
     }
 
@@ -98,6 +103,15 @@ public class Server{
         };
         t.start();
     }
+    
+    // TODO allow mewssage from Server
+    private void bcast(Client source, Message message) {
+    	for (Client destination : this.clients.values()) {
+            if (!destination.equals(source)) {
+                this.send(source, destination, message.getBody());
+            }
+        }
+    }
 
     public void process_message(Client source, Message message) {
         // get target of message
@@ -105,11 +119,7 @@ public class Server{
 
         if (target.equals(Message.AT_ALL)) {
             // Broadcast message
-            for (Client destination : this.clients.values()) {
-                if (!destination.equals(source)) {
-                    this.send(source, destination, message.getBody());
-                }
-            }
+            bcast(source, message);
         } else {
             // send message to specific client
             this.send(source, this.clients.get(target), message.getBody());
