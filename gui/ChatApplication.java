@@ -117,7 +117,7 @@ public class ChatApplication extends Application implements ChatAreaInterface {
             return new String[]{username.getText(), nickname.getText(), password.getText()};
         }
 
-        return null;
+        return new String[]{};
     }
 
     @Override
@@ -169,11 +169,17 @@ public class ChatApplication extends Application implements ChatAreaInterface {
         String[] loginData = this.showLoginDialog(primaryStage);
 
         // create Client connection
-        StreamCapturer out = new StreamCapturer(this);
-        this.client = new Client(loginData[0], loginData[2], loginData[1], "192.168.133.96", out);
+        if (loginData.length == 3) {
+            StreamCapturer out = new StreamCapturer(this);
+            this.client = new Client(loginData[0], loginData[2], loginData[1], "192.168.133.96", out);
 
-        // connect to server
-        this.client.connect();
+            // connect to server
+            this.client.connect();
+        } else {
+            // loginwindow was closed => close Application
+            Platform.exit();
+            System.exit(0);
+        }
     }
 
     @Override
