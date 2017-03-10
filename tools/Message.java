@@ -23,6 +23,7 @@ public class Message {
 	public List<String> params;
 
 	public Message(String input) {
+		System.out.println(input);
 		String original = input;
 		params = new ArrayList<String>();
 		if(input.startsWith(COLON)) {
@@ -32,7 +33,13 @@ public class Message {
 		}
 
 		int lastIndex = input.indexOf(SPACE);
-		command = Command.valueOf(input.substring(0, lastIndex).toUpperCase());
+		String comm = input.substring(0, lastIndex);
+		if(comm.matches("^[0-9]{3}$")) {
+			for(Response r : Response.values())
+				if(r.numeric.equals(comm))
+					response = r;
+		}else
+			command = Command.valueOf(comm.toUpperCase());
 		input = input.substring(lastIndex+1);
 
 		while(!(input.startsWith(COLON) || input.equals(CRLF))) {
@@ -64,7 +71,7 @@ public class Message {
 
 	public Message(String server, List<String> parameters, Response res) {
 		StringBuilder toBePrefix = new StringBuilder();
-		toBePrefix.append(COLON).append(server);
+		toBePrefix.append(server);
 		this.prefix = toBePrefix.toString();
 		this.response = res;
 		this.params = parameters;

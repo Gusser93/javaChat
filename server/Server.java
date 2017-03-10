@@ -22,7 +22,7 @@ public class Server{
     private ServerSocket socket = null;
     private boolean running = false;
     private MySqlConnector database;
-    private String serverName = "Chat Server";
+    private String serverName = "ChatServer";
 
     public Server(int port) throws IOException {
         this.port = port;
@@ -73,7 +73,7 @@ public class Server{
         this.clients.put(client.user, client);
         
         bcast(client, Message.sendBroadcastMessage(client.user + "entered chat."));
-        send(client, client, Message.sendWelcome(client.nickname, client.user, "", serverName).toString());
+        send(client, client, Message.sendWelcome(client.nickname, client.user, "", serverName));
         
         this.receive(client);
     }
@@ -127,14 +127,15 @@ public class Server{
     }
 
     public void send(final Client src, final Client dst, final String message) {
+       send(src, dst, Message.sendPrivateMessageFromServer(src.user, dst.user, message));
+    }
+
+    public void send(final Client src, final Client dst, final Message message) {
         final Server server = this;
         Thread t = new Thread(){
             public void run() {
                   if (server.is_running()){
-                      String dstusr = dst.user;
-                      String srcusr = src.user;
-                      Message msg = Message.sendPrivateMessageFromServer(srcusr, dstusr, message);
-                      dst.stream_out.print(msg.toString());
+                      dst.stream_out.print(message.toString());
                       dst.stream_out.flush();
                   }
             }
