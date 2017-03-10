@@ -72,8 +72,8 @@ public class Server{
         // create Client after Handshake
         this.clients.put(client.user, client);
         
-        bcast(client, Message.sendBroadcastMessage(client.user + "entered chat."));
-        send(client, client, Message.sendWelcome(client.nickname, client.user, "", serverName));
+        serverBcast(Message.sendBroadcastMessage(client.user + " entered chat."));
+        send(client, Message.sendWelcome(client.nickname, client.user, "", serverName));
         
         this.receive(client);
     }
@@ -104,12 +104,17 @@ public class Server{
         t.start();
     }
     
-    // TODO allow mewssage from Server
     private void bcast(Client source, Message message) {
     	for (Client destination : this.clients.values()) {
             if (!destination.equals(source)) {
                 this.send(source, destination, message.getBody());
             }
+        }
+    }
+    
+    private void serverBcast(Message message) {
+    	for (Client destination : this.clients.values()) {
+            this.send(this.serverName, destination, message.getBody());
         }
     }
 
@@ -127,10 +132,14 @@ public class Server{
     }
 
     public void send(final Client src, final Client dst, final String message) {
-       send(src, dst, Message.sendPrivateMessageFromServer(src.user, dst.user, message));
+       send(dst, Message.sendPrivateMessageFromServer(src.user, dst.user, message));
     }
 
-    public void send(final Client src, final Client dst, final Message message) {
+    public void send(final String src, final Client dst, final String message) {
+       send(dst, Message.sendPrivateMessageFromServer(src, dst.user, message));
+    }
+
+    public void send(final Client dst, final Message message) {
         final Server server = this;
         Thread t = new Thread(){
             public void run() {
