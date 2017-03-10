@@ -12,6 +12,8 @@ import java.util.Scanner;
 import tools.IrcParser;
 import tools.Message;
 import client.Client;
+import database.MySqlConnector;
+
 import java.util.HashMap;
 
 public class Server{
@@ -19,11 +21,13 @@ public class Server{
     private int port;
     private ServerSocket socket = null;
     private boolean running = false;
+    private MySqlConnector database;
 
     public Server(int port) throws IOException {
         this.port = port;
         this.socket = new ServerSocket(port);
         this.running = true;
+        this.database = new MySqlConnector();
     }
 
     public void accept_connections(){
@@ -126,6 +130,18 @@ public class Server{
             }
         };
         t.start();
+    }
+    
+    public boolean checkUserExists(String username) {
+    	return database.checkUserExists(username);
+    }
+    
+    public boolean createUser(String username, String password) {
+    	return database.registerUser(username, password);
+    }
+    
+    public boolean checkCorrectUser(String username, String password) {
+    	return database.checkCorrectLogin(username, password);
     }
 
     public static void main(String[] args) throws Exception {
