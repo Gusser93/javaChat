@@ -19,7 +19,7 @@ public class Client{
     private boolean connected = false;
     private PrintWriter output = null;
 
-    public static void main(String[] args) throws Exception {
+    /*public static void main(String[] args) throws Exception {
         Client client = new Client("Dieter2", "SuperSecret", "Nick", "192.168.133.96", System.out);
         if (client.connect()){
             client.bcast("Hallo an alle!");
@@ -28,7 +28,7 @@ public class Client{
         }else{
             System.out.println("Markus wars!!!");
         }
-    }
+    }*/
 
     public Client(String user, String passwd, String nickname, Socket socket) throws IOException {
         this.user = user;

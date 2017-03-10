@@ -65,6 +65,7 @@ public class ChatApplication extends Application implements ChatAreaInterface {
         grid.setPadding(new Insets(5, 5, 5, 5));
 
         // add chat area
+        this.chatArea.setEditable(false);
         grid.add(this.chatArea, 0, 0, 2, 1);
 
         // Person to message
