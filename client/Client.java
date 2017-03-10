@@ -22,15 +22,9 @@ public class Client{
     public static void main(String[] args) throws Exception {
         Client client = new Client("Dieter2", "SuperSecret", "Nick", "192.168.133.96", System.out);
         if (client.connect()){
-<<<<<<< HEAD
             client.bcast("Hallo an alle!");
             client.send("Hallo Chris", "chris");
             client.send("Hallo Markus", "Dieter2");
-            //client.disconnect();
-=======
-        	for (int i = 0; i < 10; i++)
-        		client.bcast("Test Nachricht");
->>>>>>> 8db868921afde2f30cfb3f7b6cc595d290dafd82
         }else{
             System.out.println("Markus wars!!!");
         }
