@@ -11,7 +11,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.Insets;
 import javafx.application.Platform;
-
+import javafx.scene.control.Dialog;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.PasswordField;
+import javafx.util.Pair;
+import javafx.scene.Node;
+import java.util.Optional;
 
 import java.io.*;
 import client.Client;
@@ -50,14 +56,61 @@ public class ChatApplication extends Application implements ChatAreaInterface {
     public TextArea chatArea = new TextArea();
     public Client client = null;
 
+    public String[] showLoginDialog(Stage primaryStage) {
+        // Create the custom dialog.
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.initOwner(primaryStage);
+        dialog.setTitle("Login Dialog");
+        dialog.setHeaderText("Login");
+
+
+        // Set the button types.
+        ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().add(loginButtonType);
+
+        // Create the username and password labels and fields.
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField username = new TextField();
+        username.setPromptText("Username");
+        PasswordField password = new PasswordField();
+        password.setPromptText("Password");
+
+        grid.add(new Label("Username:"), 0, 0);
+        grid.add(username, 1, 0);
+        grid.add(new Label("Password:"), 0, 1);
+        grid.add(password, 1, 1);
+
+        // Enable/Disable login button depending on whether a username was entered.
+        Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
+        loginButton.setDisable(true);
+
+        // Do some validation (using the Java 8 lambda syntax).
+        username.textProperty().addListener((observable, oldValue, newValue) -> {
+            loginButton.setDisable(newValue.trim().isEmpty());
+        });
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Request focus on the username field by default.
+        Platform.runLater(() -> username.requestFocus());
+
+        // get result
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            return new String[]{username.getText(), password.getText()};
+        }
+
+        return null;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         // window title
         primaryStage.setTitle("Chat");
-
-        // create Client connection
-        StreamCapturer out = new StreamCapturer(this);
-        this.client = new Client("David", "SuperSecret", "Nick", "192.168.133.96", out);
 
         // main grid
         GridPane grid = new GridPane();
@@ -83,25 +136,29 @@ public class ChatApplication extends Application implements ChatAreaInterface {
         sendBt.setMinWidth(50);
 
         sendBt.setOnAction(action -> {
-            String dest = destUser.getText();
-            String message = messageField.getText();
-            this.client.send(message, dest);
-            messageField.clear();
-
-            /* write own message to chat
-            Message msg = Message.sendPrivateMessage(target, message);
-            out.write(msg);
-            out.flush();*/
-
+            if (this.client != null) {
+                String dest = destUser.getText();
+                String message = messageField.getText();
+                this.client.send(message, dest);
+                messageField.clear();
+            }
         });
 
         grid.add(sendBt, 0, 2);
         grid.add(messageField, 1, 2);
 
         // start scene
-        Scene scene = new Scene(grid, 200, 100);
+        Scene scene = new Scene(grid, 300, 200);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        // login
+        String[] loginData = this.showLoginDialog(primaryStage);
+        System.out.println(loginData[0] + "  " + loginData[1]);
+
+        // create Client connection
+        StreamCapturer out = new StreamCapturer(this);
+        this.client = new Client("David", "SuperSecret", "Nick", "192.168.133.96", out);
 
         // connect to server
         this.client.connect();
