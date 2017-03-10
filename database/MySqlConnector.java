@@ -49,9 +49,8 @@ public class MySqlConnector {
 	public boolean checkUserExists(String username) {
 		try {
 			this.connectToMySql("localhost", DATABASE, DB_USER, DB_PW);
-			preparedStatement = connection.prepareStatement("SELECT username from ? where username = ?");
-			preparedStatement.setString(1, DATABASE+"."+USERTABLE);
-			preparedStatement.setString(2, username);
+			preparedStatement = connection.prepareStatement("SELECT username FROM "+USERTABLE+" WHERE username=?");
+			preparedStatement.setString(1, username);
 			resultSet = preparedStatement.executeQuery();
 			result = resultSet.next();
 		} catch (Exception ex) {
@@ -63,13 +62,26 @@ public class MySqlConnector {
         return result;
 	}
 	
+	public boolean checkUserExistsWithoutClose(String username) {
+		try {
+			this.connectToMySql("localhost", DATABASE, DB_USER, DB_PW);
+			preparedStatement = connection.prepareStatement("SELECT username FROM "+USERTABLE+" WHERE username=?");
+			preparedStatement.setString(1, username);
+			resultSet = preparedStatement.executeQuery();
+			result = resultSet.next();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			result =  false;
+		}
+        return result;
+	}
+	
 	public boolean checkCorrectLogin(String username, String passwd) {
 		try {
 			this.connectToMySql("localhost", DATABASE, DB_USER, DB_PW);
-			preparedStatement = connection.prepareStatement("SELECT username, password from ? where user = ? and password = ?");
-			preparedStatement.setString(1, DATABASE+"."+USERTABLE);
-			preparedStatement.setString(2, username);
-			preparedStatement.setString(3, passwd);
+			preparedStatement = connection.prepareStatement("SELECT username, password FROM "+USERTABLE+" WHERE username=? AND password=?");
+			preparedStatement.setString(1, username);
+			preparedStatement.setString(2, passwd);
 			resultSet = preparedStatement.executeQuery();
 			result = resultSet.next();
 		} catch (Exception ex) {
@@ -84,14 +96,13 @@ public class MySqlConnector {
 	public boolean registerUser(String username, String passwd) {
 		try {
 			this.connectToMySql("localhost", DATABASE, DB_USER, DB_PW);
-			if (!this.checkUserExists(username)) {
-				preparedStatement = connection.prepareStatement("insert into ? values (default, ?, ?, ?, ?)");
-				preparedStatement.setString(1, DATABASE+"."+USERTABLE);
+			if (!this.checkUserExistsWithoutClose(username)) {
+				preparedStatement = connection.prepareStatement("INSERT INTO "+USERTABLE+" values(default, ?, ?, ?, ?, ?)");
+				preparedStatement.setString(1, username);
 				preparedStatement.setString(2, username);
-				preparedStatement.setString(3, username);
-				preparedStatement.setString(4, passwd);
-				preparedStatement.setString(5, ""); //Salt
-				preparedStatement.setString(6, ""); //public key
+				preparedStatement.setString(3, passwd);
+				preparedStatement.setString(4, ""); //Salt
+				preparedStatement.setString(5, ""); //public key
 				preparedStatement.executeUpdate();
 				result = true;
 			} else

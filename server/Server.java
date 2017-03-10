@@ -69,6 +69,8 @@ public class Server{
         msg = new Message(raw_message);
         client.user = msg.params.get(0);
         
+        System.out.println(client.user + " " + client.nickname + " " + client.passwd);
+        
         if(this.checkUserExists(client.user))
         	if(this.checkCorrectUser(client.user, client.passwd))
         		welcomeUser(client);

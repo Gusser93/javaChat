@@ -121,10 +121,10 @@ public class Message {
 	}
 
 	public static Message sendReject(String nickname, String server){
-		String text = Response.RPL_WELCOME.text;
+		String text = Response.ERR_ALREADYREGISTRED.text;
 		List<String> parameters = new ArrayList<String>();
 		Collections.addAll(parameters, nickname, text);
-		return new Message(server, parameters, Response.RPL_WELCOME);
+		return new Message(server, parameters, Response.ERR_ALREADYREGISTRED);
 	}
 
 	public String getTarget() {
