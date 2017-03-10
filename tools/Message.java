@@ -23,7 +23,6 @@ public class Message {
 	public List<String> params;
 
 	public Message(String input) {
-		System.out.println(input);
 		String original = input;
 		params = new ArrayList<String>();
 		if(input.startsWith(COLON)) {
