@@ -85,6 +85,7 @@ public class ChatApplication extends Application implements ChatAreaInterface {
             String dest = destUser.getText();
             String message = messageField.getText();
             this.client.send(message, dest);
+            messageField.clear();
 
             /* write own message to chat
             Message msg = Message.sendPrivateMessage(target, message);
@@ -120,6 +121,11 @@ public class ChatApplication extends Application implements ChatAreaInterface {
         }
     }
 
+    @Override
+    public void stop(){
+        System.out.println("Stage is closing");
+        this.client.disconnect();
+    }
 
     public static void main(String[] args) {
         Application.launch(args);
